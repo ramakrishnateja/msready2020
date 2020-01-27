@@ -20,4 +20,4 @@ spec:
     environment: dev
     team: infra
   sessionAffinity: None
-  type: LoadBalancer
+  type: ClusterIP

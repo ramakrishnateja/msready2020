@@ -1,0 +1,20 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: nopublicip
+  namespace: infra-dev
+webhooks:
+  - name: nopublic.msready.com
+    rules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - services
+    failurePolicy: Fail
+    clientConfig:
+      url: "https://msreadycompliance.azurewebsites.net/api/NoPublicIp"

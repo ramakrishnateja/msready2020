@@ -3,10 +3,11 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('HTTP trigger function processed a request.');
     var admissionRequest = req.body;
+    context.log(`Request Body: ${JSON.stringify(req.body)}`);
     var object = admissionRequest.request.object;
 
-    console.log(`validating the ${object.metadata.name} pod`);
-    console.log(`${object.metadata.annotations}`);
+    context.log(`validating the ${object.metadata.name} pod`);
+    context.log(`${object.metadata.annotations}`);
 
     let isValid = true;
     let message = "";

@@ -28,7 +28,13 @@ steps:
   inputs:
     command: 'install'
     workingDir: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
-    
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
+    customCommand: 'run build:production'
+  
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'

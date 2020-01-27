@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "msready-2020-pwc-aks"
+        },
+        "kubernetesVersion": {
+            "value": "1.14.8"
+        },
+        "vnetResourceGroup": {
+            "value": "msready"
+        },
+        "vnet": {
+            "value": "msready-2020-pwc-vnet"
+        },
+        "subnet": {
+            "value": "msready-2020-pwc-subnet-aks"
+        },
+        "defaultNodepool": {
+            "value": {
+                "name": "regular",
+                "vmSize": "Standard_D8s_v3",
+                "osDiskSize": 120,
+                "count": 2,
+                "maxCount": 10,
+                "minCount": 2
+            }
+        },
+        "agentPools": {
+            "value": [
+                {
+                    "name": "executor",
+                    "vmSize": "Standard_F32s_v2",
+                    "osDiskSize": 120,
+                    "count": 2,
+                    "maxCount": 20,
+                    "minCount": 2,
+                    "taints": []
+                }
+            ]
+        }
+    }
+}

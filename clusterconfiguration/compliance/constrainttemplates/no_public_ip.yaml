@@ -1,0 +1,47 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: nopublicip
+  namespace: gatekeeper-system
+spec:
+  crd:
+    spec:
+      names:
+        kind: NoPublicIp
+      validation:
+        openAPIV3Schema:
+          properties:
+            message:
+              type: string
+            annotations:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  allowedValue:
+                    type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      libs:
+        - |
+          package lib.helpers
+
+          make_message(missing) = msg {
+            msg := sprintf("you must provide annotation 'service.beta.kubernetes.io/azure-load-balancer-internal: true' on LoadBalancer: %v", [missing])
+          }
+
+      rego: |
+        package nopublicip
+
+        import data.lib.helpers
+
+        violation[{"msg": msg, "details": {"missing_annotation": missing}}] {
+          
+          1 == 1
+          
+          msg := helpers.make_message(missing)
+        }
+
+        

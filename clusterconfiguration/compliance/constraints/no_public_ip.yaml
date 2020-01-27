@@ -1,0 +1,15 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: NoPublicIp
+metadata:
+  name: no-public-ip
+  namespace: gatekeeper-system
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Service"]
+  parameters:
+    message: "All loadbalancers must specify annotation service.beta.kubernetes.io/azure-load-balancer-internal as true"
+    annotations:
+      - key: service.beta.kubernetes.io/azure-load-balancer-internal
+        allowedValue: "true"

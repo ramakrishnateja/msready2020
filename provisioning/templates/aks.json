@@ -1,0 +1,239 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "kubernetesVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "vnetResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "vnet": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnetCidr": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The CIDR for the subnet to be deployed"
+            }
+        },
+        "newOrExistingSubnet": {
+            "type": "string",
+            "defaultValue": "existing",
+            "allowedValues": [
+                "new",
+                "existing"
+            ]
+        },
+        "clientId": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "clientSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "defaultNodepool": {
+            "type": "object",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "agentPools": {
+            "type": "array",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "securityRules": {
+            "type": "array",
+            "defaultValue": [
+            ]
+        },
+        "networkPlugin": {
+            "type": "string",
+            "defaultValue": "kubenet"
+        },
+        "serviceCidr": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16"
+        },
+        "dnsServiceIP": {
+            "type": "string",
+            "defaultValue": "10.0.0.10"
+        },
+        "dockerBridgeCidr": {
+            "type": "string",
+            "defaultValue": "172.17.0.1/16"
+        },
+        "windowsAdminPassword": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "subnetId": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets',parameters('vnet'),parameters('subnet'))]",
+        "nsgName": "[concat(parameters('subnet'),'-NSG')]",
+        "windowsProfile": {
+            "adminPassword": "[parameters('windowsAdminPassword')]",
+            "adminUsername": "azureuser"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "nestedSubnetTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('vnetResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                    },
+                    "variables": {
+                    },
+                    "resources": [
+                        {
+                            "condition": "[equals(parameters('newOrExistingSubnet'),'new')]",
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "name": "[variables('nsgName')]",
+                            "apiVersion": "2019-04-01",
+                            "location": "[resourceGroup().location]",
+                            "properties": {
+                                "securityRules": "[parameters('securityRules')]"
+                            }
+                        },
+                        {
+                            "condition": "[equals(parameters('newOrExistingSubnet'),'new')]",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "name": "[concat(parameters('vnet'),'/',parameters('subnet'))]",
+                            "location": "[resourceGroup().location]",
+                            "apiVersion": "2019-04-01",
+                            "dependsOn": [
+                                "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
+                            ],
+                            "properties": {
+                                "addressPrefix": "[parameters('subnetCidr')]",
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
+                                }
+                            }
+                        }
+                    ],
+                    "outputs": {
+                        "subnetId": {
+                            "type": "string",
+                            "value": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets',parameters('vnet'),parameters('subnet'))]"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "[parameters('name')]",
+            "type": "Microsoft.ContainerService/managedClusters",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "nestedSubnetTemplate"
+            ],
+            "properties": {
+                "kubernetesVersion": "[parameters('kubernetesVersion')]",
+                "dnsPrefix": "[parameters('name')]",
+                "agentPoolProfiles": [
+                    {
+                        "name": "[parameters('defaultNodepool').name]",
+                        "count": "[parameters('defaultNodepool').count]",
+                        "vmSize": "[parameters('defaultNodepool').vmSize]",
+                        "vnetSubnetID": "[variables('subnetId')]",
+                        "osDiskSizeGB": "[parameters('defaultNodepool').osDiskSize]",
+                        "osType": "Linux",
+                        "enableAutoScaling": true,
+                        "minCount": "[parameters('defaultNodepool').minCount]",
+                        "maxCount": "[parameters('defaultNodepool').maxCount]",
+                        "type": "VirtualMachineScaleSets",
+                        "storageProfile": "ManagedDisks"
+                    }
+                ],
+                "servicePrincipalProfile": {
+                    "clientId": "[parameters('clientId')]",
+                    "secret": "[parameters('clientSecret')]"
+                },
+                "enableRBAC": true,
+                "networkProfile": {
+                    "networkPlugin": "[parameters('networkPlugin')]",
+                    "serviceCidr": "[parameters('serviceCidr')]",
+                    "dnsServiceIP": "[parameters('dnsServiceIP')]",
+                    "dockerBridgeCidr": "[parameters('dockerBridgeCidr')]",
+                    "loadBalancerSku": "standard"
+                },
+                "windowsProfile": "[if(empty(parameters('windowsAdminPassword')),json('null'),variables('windowsProfile'))]"
+            }
+        },
+        {
+            "type": "Microsoft.ContainerService/managedClusters/agentPools",
+            "name": "[concat(parameters('name'),'/',parameters('agentPools')[copyIndex()].name)]",
+            "apiVersion": "2019-06-01",
+            "copy": {
+                "name": "agentpoolcopy",
+                "count": "[length(parameters('agentPools'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.ContainerService/managedClusters',parameters('name'))]"
+            ],
+            "properties": {
+                "count": "[parameters('agentPools')[copyIndex()].count]",
+                "vmSize": "[parameters('agentPools')[copyIndex()].vmSize]",
+                "osDiskSizeGB": "[parameters('agentPools')[copyIndex()].osDiskSize]",
+                "vnetSubnetID": "[variables('subnetId')]",
+                "maxCount": "[parameters('agentPools')[copyIndex()].maxCount]",
+                "minCount": "[parameters('agentPools')[copyIndex()].minCount]",
+                "osType": "[if(contains(parameters('agentPools')[copyIndex()],'osType'),parameters('agentPools')[copyIndex()].osType,json('null'))]",
+                "maxPods": "[if(contains(parameters('agentPools')[copyIndex()],'maxPods'),int(parameters('agentPools')[copyIndex()].maxPods),json('null'))]",
+                "nodeTaints": "[if(empty(parameters('agentPools')[copyIndex()].taints),json('null'),parameters('agentPools')[copyIndex()].taints) ]",
+                "enableAutoScaling": true,
+                "type": "VirtualMachineScaleSets"
+            }
+        }
+    ],
+    "outputs": {
+        "resourceGroupName": {
+            "type": "string",
+            "value": "[concat('MC_',resourceGroup().name,'_',parameters('name'),'_',resourceGroup().location)]"
+        },
+        "subnetId": {
+            "type": "string",
+            "value": "[reference('nestedSubnetTemplate').outputs.subnetId.value]"
+        }
+    },
+    "functions": [
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "routeTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the route table"
+            }
+        },
+        "routes": {
+            "type": "array",
+            "metadata": {
+                "description": "The list of the routes to be added to the route table"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "name": "[concat(parameters('routeTableName'),copyIndex())]",
+            "condition": "[greater(length(parameters('routes')), 0)]",
+            "copy": {
+                "name": "routescopy",
+                "count": "[length(parameters('routes'))]",
+                "mode": "Serial"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "name": "[concat(parameters('routeTableName'),'/',parameters('routes')[copyIndex()].name)]",
+                            "type": "Microsoft.Network/routeTables/routes",
+                            "apiVersion": "2019-04-01",
+                            "properties": {
+                                "addressPrefix": "[parameters('routes')[copyIndex()].addressPrefix]",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "[parameters('routes')[copyIndex()].nextHopIp]"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

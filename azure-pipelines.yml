@@ -18,12 +18,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: PowerShell@2
+- task: FuncToolsInstaller@0
   inputs:
-    targetType: 'inline'
-    script: |
-      # Write your PowerShell commands here.
-      ls $(System.DefaultWorkingDirectory)
+    version: 'latest'
 - task: Npm@1
   inputs:
     command: 'install'

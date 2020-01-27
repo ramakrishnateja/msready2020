@@ -34,25 +34,24 @@ steps:
     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: 'ComplianceWebHooks-$(Build.BuildId).zip'
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: '$(Build.BuildId)'
-    publishLocation: 'Container'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/ComplianceWebHooks-$(Build.BuildId).zip'
+    ArtifactName: 'deploy'
 
-- task: DownloadBuildArtifacts@0
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: '$(Build.BuildId).zip'
-    downloadPath: '$(System.ArtifactsDirectory)'
-- task: AzureFunctionApp@1
-  inputs:
-    azureSubscription: 'PwC MSDN'
-    appType: 'functionApp'
-    appName: 'msreadycompliance'
-    package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
-    deploymentMethod: 'auto'
+#- task: DownloadBuildArtifacts@0
+#  inputs:
+#    buildType: 'current'
+#    downloadType: 'single'
+#    artifactName: '$(Build.BuildId).zip'
+#    downloadPath: '$(System.ArtifactsDirectory)'
+#- task: AzureFunctionApp@1
+#  inputs:
+#    azureSubscription: 'PwC MSDN'
+#    appType: 'functionApp'
+#    appName: 'msreadycompliance'
+#    package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
+#    deploymentMethod: 'auto'

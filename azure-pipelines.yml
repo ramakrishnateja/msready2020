@@ -25,10 +25,10 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-
 - task: Npm@1
   inputs:
-    command: 'run build:production'
+    command: 'custom'
+    customCommand: 'run build:production'
 
 - task: ArchiveFiles@2
   inputs:

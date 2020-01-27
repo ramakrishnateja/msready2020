@@ -42,16 +42,17 @@ steps:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/ComplianceWebHooks-$(Build.BuildId).zip'
     ArtifactName: 'deploy'
 
-#- task: DownloadBuildArtifacts@0
-#  inputs:
-#    buildType: 'current'
-#    downloadType: 'single'
-#    artifactName: '$(Build.BuildId).zip'
-#    downloadPath: '$(System.ArtifactsDirectory)'
-#- task: AzureFunctionApp@1
-#  inputs:
-#    azureSubscription: 'PwC MSDN'
-#    appType: 'functionApp'
-#    appName: 'msreadycompliance'
-#    package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
-#    deploymentMethod: 'auto'
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'deploy'
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- task: AzureFunctionApp@1
+  inputs:
+    azureSubscription: 'PwC MSDN'
+    appType: 'functionApp'
+    appName: 'msreadycompliance'
+    package: '$(System.ArtifactsDirectory)/deploy/ComplianceWebHooks-$(Build.BuildId).zip'
+    deploymentMethod: 'auto'

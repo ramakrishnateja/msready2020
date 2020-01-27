@@ -32,11 +32,7 @@ steps:
   inputs:
     command: 'install'
     workingDir: '$(Build.ArtifactStagingDirectory)'
-- task: Npm@1
-  inputs:
-    command: 'custom'
-    customCommand: 'run build:production'
-    workingDir: '$(Build.ArtifactStagingDirectory)'
+
     
 - task: ArchiveFiles@2
   inputs:

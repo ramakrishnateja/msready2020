@@ -23,15 +23,15 @@ steps:
     targetType: 'inline'
     script: |
       # Write your PowerShell commands here.
-      ls $(Build.ArtifactStagingDirectory)
+      ls $(System.DefaultWorkingDirectory)
 - task: Npm@1
   inputs:
     command: 'install'
-    workingDir: '$(Build.ArtifactStagingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
+    workingDir: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
     
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/'
     includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'

@@ -39,7 +39,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/clusterconfiguration/compliance/ComplianceWebHooks/ComplianceWebHooks-$(Build.BuildId).zip'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/ComplianceWebHooks-$(Build.BuildId).zip'
     ArtifactName: 'deploy'
 
 #- task: DownloadBuildArtifacts@0

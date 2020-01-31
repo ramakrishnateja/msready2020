@@ -36,12 +36,13 @@ steps:
       artifactName: 'deploy'
       downloadPath: '$(System.ArtifactsDirectory)'
  
+
   - task: Powershell@2
     displayName: Deploy MS-Ready Demo AKS
     inputs:
-      targetType: 'inline'
-      script: |
-          $(System.DefaultWorkingDirectory)/deploy/deploy.ps1 --clientId $env:CLIENT_ID --clientSecret $env:CLIENT_SECRET --subscriptionId $env:SUBSCRIPTION_ID --tenantId $env:TENANT_ID --paramsDirectory $(msready-aks-params-path)
+      filePath: '$(System.DefaultWorkingDirectory)/deploy/deploy.ps1'
+      arguments: '--clientId $env:CLIENT_ID --clientSecret $env:CLIENT_SECRET --subscriptionId $env:SUBSCRIPTION_ID --tenantId $env:TENANT_ID --paramsDirectory $(msready-aks-params-path)'
+      pwsh: true
     env:
       SUBSCRIPTION_ID: $(subscription-id)
       TENANT_ID: $(tenant-id)

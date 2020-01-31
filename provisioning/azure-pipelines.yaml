@@ -41,7 +41,7 @@ steps:
     displayName: Deploy MS-Ready Demo AKS
     inputs:
       filePath: '$(System.ArtifactsDirectory)/deploy/deploy.ps1'
-      arguments: '-clientId $env:CLIENT_ID -clientSecret $env:CLIENT_SECRET -tenantId $env:TENANT_ID -subscriptionId $env:SUBSCRIPTION_ID  -paramsDirectory $(msready-aks-params-path)'
+      arguments: '-clientId $env:CLIENT_ID -clientSecret $env:CLIENT_SECRET -tenantId $env:TENANT_ID -subscriptionId $env:SUBSCRIPTION_ID  -paramsDirectory $(System.ArtifactsDirectory)/deploy/parameters/demo'
       pwsh: true
     env:
       SUBSCRIPTION_ID: $(subscription-id)

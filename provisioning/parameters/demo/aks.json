@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "msready-2020-pwc-aks"
+            "value": "msready-bhavin-2020-aks"
         },
         "kubernetesVersion": {
             "value": "1.14.8"
         },
         "vnetResourceGroup": {
-            "value": "msready"
+            "value": "ready-winter-2020"
         },
         "vnet": {
-            "value": "msready-2020-pwc-vnet"
+            "value": "az-vnet"
         },
         "subnet": {
-            "value": "msready-2020-pwc-subnet-aks"
+            "value": "aks-subnet"
         },
         "defaultNodepool": {
             "value": {

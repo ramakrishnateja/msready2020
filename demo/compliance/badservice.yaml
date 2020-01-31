@@ -1,14 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: test-app
-    environment: dev
-    team: infra
   annotations:
     test: app
   name: test-app-bad-service
-  namespace: infra-dev
+  namespace: compliance
 spec:
   ports:
   - name: http

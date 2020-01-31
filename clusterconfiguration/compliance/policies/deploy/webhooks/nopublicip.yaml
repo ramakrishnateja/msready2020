@@ -3,6 +3,8 @@ kind: ValidatingWebhookConfiguration
 metadata:
   name: nopublicip
   namespace: compliance
+  annotations:
+    cert-manager.io/inject-ca-from-secret: cert-manager/cert-manager-webhook-ca
 webhooks:
   - name: nopublic.msready.com
     rules:
@@ -17,4 +19,8 @@ webhooks:
           - services
     failurePolicy: Fail
     clientConfig:
-      url: "https://msreadycompliance.azurewebsites.net/api/NoPublicIp"
+      service:
+        name: policy-service
+        namespace: policies
+        path: /api/nopublicip
+      #url: "https://msreadycompliance.azurewebsites.net/api/NoPublicIp"

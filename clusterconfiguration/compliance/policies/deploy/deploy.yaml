@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policy-service-webhook
+  labels:
+    app: policy-service-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: policy-service-webhook
+  template:
+    metadata:
+      labels:
+        app: policy-service-webhook
+    spec:
+      containers:
+        - name: policy-service-webhook
+          image: ramakrishnateja/kubepolicies:9
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: policy-service-webhook
+spec:
+  selector:
+    app: policy-service-webhook
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+      protocol: TCP
+  type: ClusterIP

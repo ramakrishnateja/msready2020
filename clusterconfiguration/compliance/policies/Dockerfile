@@ -1,4 +1,4 @@
-FROM node:13.7.0
+FROM node:13.7.0 as base
 WORKDIR /usr/src/app
 RUN mkdir dist
 COPY package.json .
@@ -12,6 +12,6 @@ RUN npm run build
 
 FROM build as release
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/dist .
-EXPOSE 8080
-CMD ["node", "dist/index.js"]
+COPY --from=build /usr/src/app/bin .
+EXPOSE 8000/tcp
+CMD ["node", "bin/index.js"]

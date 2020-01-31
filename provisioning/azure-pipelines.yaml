@@ -1,0 +1,50 @@
+# Starter pipeline
+
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - master
+      - releases/*
+  paths:
+    include:
+      - clusterconfiguration/provisioning/
+ 
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: 'ms-ready-subscription-spn-creds'
+  - name: 'msready-aks-params-path'
+    value: './parameters/demo'
+
+ 
+steps:
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/provisioning'
+      ArtifactName: 'deploy'
+ 
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'deploy'
+      downloadPath: '$(System.ArtifactsDirectory)'
+ 
+  - task: Powershell@2
+    displayName: Deploy MS-Ready Demo AKS
+    inputs:
+      targetType: 'inline'
+      script: |
+          $(System.DefaultWorkingDirectory)/deploy/deploy.ps1 --clientId $env:CLIENT_ID --clientSecret $env:CLIENT_SECRET --subscriptionId $env:SUBSCRIPTION_ID --tenantId $env:TENANT_ID --paramsDirectory $(msready-aks-params-path)
+    env:
+      SUBSCRIPTION_ID: $(subscription-id)
+      TENANT_ID: $(tenant-id)
+      CLIENT_ID: $(client-id)
+      CLIENT_SECRET: $(client-secret)
+ 

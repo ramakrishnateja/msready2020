@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: policies
+
+---
+
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: cert-manager-webhook-ca
+  namespace: cert-manager-test
+spec:
+  ca:
+    secretName: cert-manager-webhook-ca
+
+---
+
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: policy-service-cert
+  namespace: policies
+spec:
+  commonName: policy-service.policies
+  # if successful the certificate is stored in the below secret
+  secretName: policy-service-cert-tls
+  issuerRef:
+    name: cert-manager-webhook-ca
+    kind: ClusterIssuer
+  organization:
+    - msready2020
+  dnsNames:
+    - policy-service
+    - policy-service.policies
+    - policy-service.policies.svc

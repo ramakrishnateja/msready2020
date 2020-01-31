@@ -20,7 +20,7 @@
         "defaultNodepool": {
             "value": {
                 "name": "regular",
-                "vmSize": "Standard_D8s_v3",
+                "vmSize": "Standard_Ds2_v2",
                 "osDiskSize": 120,
                 "count": 2,
                 "maxCount": 10,
@@ -31,7 +31,7 @@
             "value": [
                 {
                     "name": "executor",
-                    "vmSize": "Standard_F32s_v2",
+                    "vmSize": "Standard_Ds2_v2",
                     "osDiskSize": 120,
                     "count": 2,
                     "maxCount": 20,

@@ -18,7 +18,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: 'ms-ready-subscription-spn-creds'
+  - group: 'ms-ready-subscription-spn-credentials'
   - name: 'msready-aks-params-path'
     value: './parameters/demo'
 
